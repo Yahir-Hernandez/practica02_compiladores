@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 3.14)
 project(nfa_to_dfa CXX)
 
-# Usar estándar C++17 o posterior
+# El proyecto requiere C++17 por las operaciones de la biblioteca estandar.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Incluir la carpeta src para buscar headers
+# Permite incluir los encabezados del directorio fuente.
 include_directories(src)
 
-# Definir los archivos fuente
+# Fuentes del ejecutable de demostracion.
 set(SOURCES
     src/main.cpp
     src/to_string.cpp
+    src/convert.cpp
 )
 
-# Crear el ejecutable llamado 'nfa_to_dfa_exec'
+# Genera el ejecutable que imprime los NFA y DFA en formato Typst.
 add_executable(nfa_to_dfa_exec ${SOURCES})

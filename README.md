@@ -1,1 +1,1 @@
-# practica02_compiladores
+# Practica 2 - Compiladores
