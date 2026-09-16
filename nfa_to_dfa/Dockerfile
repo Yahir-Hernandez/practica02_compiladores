@@ -23,8 +23,16 @@ WORKDIR /app
 # Copiar el código fuente
 COPY . .
 
-# Compilar con CMake en contenedor
-RUN mkdir -p build && cd build && cmake .. && make
+# Configurar y compilar el programa junto con la suite de pruebas.
+RUN cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_TESTING=ON \
+    -DNFA_DFA_ENABLE_SANITIZERS=ON \
+    && cmake --build build --parallel
 
-# Comando por defecto para ejecutar tu programa
-CMD ["./build/nfa_to_dfa_exec"]
+# LeakSanitizer se desactiva por compatibilidad con contenedores restringidos.
+ENV ASAN_OPTIONS=detect_leaks=0:halt_on_error=1
+ENV UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
+
+# Ejecutar la suite registrada en CTest al iniciar el contenedor.
+CMD ["ctest", "--test-dir", "build", "--output-on-failure", "-V"]
