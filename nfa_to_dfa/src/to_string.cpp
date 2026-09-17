@@ -95,6 +95,34 @@ std::string state_name(const std::string &prefix, IDstate state)
   return prefix + std::to_string(state);
 }
 
+// Serializa el alfabeto conservando el orden definido por std::set.
+std::string alphabet_to_string(const std::set<char> &alphabet)
+{
+  std::vector<std::string> symbols;
+  for (char symbol : alphabet)
+  {
+    symbols.push_back(std::string(1, symbol));
+  }
+  return to_array(symbols);
+}
+
+// Serializa un conjunto de estados en notacion matematica.
+std::string state_set_to_string(const std::set<IDstate> &states,
+                                const std::string &prefix)
+{
+  std::string result = "{";
+  for (auto it = states.begin(); it != states.end(); ++it)
+  {
+    result += state_name(prefix, *it);
+    if (std::next(it) != states.end())
+    {
+      result += ", ";
+    }
+  }
+  result += "}";
+  return result;
+}
+
 // Serializa la lista de estados finales.
 std::string final_states_to_string(const std::set<IDstate> &f_states,
                                    const std::string &prefix)

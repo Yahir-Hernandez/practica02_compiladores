@@ -2,10 +2,12 @@
  * @file main.cpp
  * @brief Convierte cuatro NFA de ejemplo y genera su documento Typst y PDF.
  */
+#include <cstddef>
 #include <iostream>
 #include <string>
 #include <vector>
 #include "automatas.hpp"
+#include "to_string.hpp"
 #include "typst_doc.hpp"
 
 using namespace std;
@@ -70,11 +72,33 @@ namespace
     return cases;
   }
 
+  /** Imprime los automatas y la correspondencia de estados de cada ejemplo. */
+  void print_case(const Conversion &conversion)
+  {
+    cout << "==== " << conversion.title << " ====\n";
+    cout << "Alfabeto: " << alphabet_to_string(conversion.nfa.get_alphabet()) << "\n";
+    cout << "NFA (" << conversion.nfa.get_num_states() << " estados):\n";
+    cout << nfa_to_string(conversion.nfa) << "\n";
+    cout << "DFA (" << conversion.dfa.get_num_states() << " estados):\n";
+    cout << dfa_to_string(conversion.dfa) << "\n";
+    cout << "Correspondencia de subconjuntos:\n";
+    for (std::size_t i = 0; i < conversion.subsets.size(); ++i)
+    {
+      cout << "  " << state_name(DFA_PREFIX, static_cast<IDstate>(i)) << " = "
+           << state_set_to_string(conversion.subsets[i], NFA_PREFIX) << "\n";
+    }
+    cout << "\n";
+  }
 } // namespace
 
 int main()
 {
   const vector<Conversion> cases = build_examples();
+  for (const Conversion &conversion : cases)
+  {
+    print_case(conversion);
+  }
+
   const string typ_path = "salida/nfa_to_dfa.typ";
   const string pdf_path = "salida/nfa_to_dfa.pdf";
 

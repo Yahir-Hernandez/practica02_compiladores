@@ -40,6 +40,13 @@ inline constexpr const char *EPSILON = "ε";
  */
 std::string state_name(const std::string &prefix, IDstate state);
 
+/** Serializa el alfabeto como arreglo de Typst, por ejemplo ("a", "b", ). */
+std::string alphabet_to_string(const std::set<char> &alphabet);
+
+/** Serializa un conjunto de estados como texto legible, por ejemplo {q0, q1}. */
+std::string state_set_to_string(const std::set<IDstate> &states,
+                                const std::string &prefix);
+
 /**
  * @brief Serializa los estados finales como arreglo de Typst.
  * @param f_states Estados finales que se serializaran.
