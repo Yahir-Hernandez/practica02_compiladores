@@ -1,5 +1,6 @@
 name: Tests
 
+<<<<<<< HEAD
 on: [push]
 
 permissions:
@@ -17,3 +18,33 @@ jobs:
       - name: Ejecutar las pruebas
         working-directory: nfa_to_dfa
         run: make test
+=======
+on:
+  push:
+  pull_request:
+
+jobs:
+  ctest:
+    name: CMake tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: nfa_to_dfa
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DNFA_DFA_ENABLE_SANITIZERS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        env:
+          ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --test-dir build --output-on-failure
+>>>>>>> 1b4ba128dd643fbf87a7c9ccb0a7abe8c0d2d20b
