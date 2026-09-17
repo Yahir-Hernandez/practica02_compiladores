@@ -3,6 +3,7 @@
  * @brief Modelos de automatas finitos no deterministas y deterministas.
  */
 #pragma once
+#include <cstddef>
 #include <map>
 #include <set>
 #include <vector>
@@ -52,10 +53,6 @@ public:
   {
     return initial_state;
   }
-  void set_initial_state(IDstate state)
-  {
-    initial_state = state;
-  }
 
   /**
    * @brief Devuelve los datos de un estado.
@@ -65,39 +62,6 @@ public:
   const stateNFA &get_state(IDstate state) const
   {
     return states[state];
-  }
-
-  /**
-   * @brief Agrega un estado.
-   * @param is_final Indica si el estado acepta cadenas.
-   * @return Identificador asignado al nuevo estado.
-   */
-  IDstate add_state(bool is_final)
-  {
-    states.push_back(stateNFA{{}, {}, is_final});
-    return states.size() - 1;
-  }
-
-  /**
-   * @brief Agrega una transicion etiquetada.
-   * @param from Estado origen.
-   * @param symbol Simbolo consumido.
-   * @param to Estado destino.
-   */
-  void add_transition(IDstate from, char symbol, IDstate to)
-  {
-    states[from].transitions[symbol].insert(to);
-    alphabet.insert(symbol);
-  }
-
-  /**
-   * @brief Agrega una transicion epsilon.
-   * @param from Estado origen.
-   * @param to Estado destino.
-   */
-  void add_epsilon_transition(IDstate from, IDstate to)
-  {
-    states[from].epsilon.insert(to);
   }
 
   /**
@@ -126,7 +90,7 @@ public:
   std::set<IDstate> get_final_states() const
   {
     std::set<IDstate> final_states;
-    for (size_t i = 0; i < states.size(); ++i)
+    for (std::size_t i = 0; i < states.size(); ++i)
     {
       if (states[i].is_final)
       {
@@ -136,7 +100,7 @@ public:
     return final_states;
   }
   /** @return Cantidad total de estados del NFA. */
-  size_t get_num_states() const { return states.size(); }
+  std::size_t get_num_states() const { return states.size(); }
 };
 
 /**
@@ -172,7 +136,7 @@ public:
   /** @return Estado inicial, que la conversion crea con el identificador cero. */
   IDstate get_initial_state() const
   {
-    return 0; 
+    return 0;
   }
 
   /** @return Conjunto de identificadores de estados finales. */
@@ -210,5 +174,5 @@ public:
   }
 
   /** @return Cantidad total de estados del DFA. */
-  size_t get_num_states() const { return transitions.size(); }
+  std::size_t get_num_states() const { return transitions.size(); }
 };

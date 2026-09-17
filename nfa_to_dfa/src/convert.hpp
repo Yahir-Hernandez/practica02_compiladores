@@ -3,12 +3,8 @@
  * @brief Operaciones para convertir un NFA en un DFA equivalente.
  */
 #pragma once
-#include <iostream>
-#include <map>
 #include <set>
 #include <vector>
-#include <queue>
-#include <stack>
 #include "automatas.hpp"
 
 /**

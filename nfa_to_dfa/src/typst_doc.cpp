@@ -5,9 +5,12 @@
 #include "typst_doc.hpp"
 #include "to_string.hpp"
 
+#include <cstddef>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <set>
+#include <system_error>
 
 namespace
 {
@@ -170,20 +173,11 @@ namespace
 ]
 )TYPST";
 
-  /** Envoltorio que ejecuta typst dentro de un contenedor de Docker. */
-  constexpr const char *DOCKER_WRAPPER = "./typst-docker.sh";
-
-  /** @return true si @p command puede ejecutarse desde la consola. */
-  bool command_exists(const std::string &command)
-  {
-    return std::system(("command -v " + command + " > /dev/null 2>&1").c_str()) == 0;
-  }
-
   /** Sustituye todas las apariciones de @p needle dentro de @p text. */
   std::string replace_all(std::string text, const std::string &needle,
                           const std::string &value)
   {
-    size_t pos = 0;
+    std::size_t pos = 0;
     while ((pos = text.find(needle, pos)) != std::string::npos)
     {
       text.replace(pos, needle.size(), value);
@@ -197,7 +191,7 @@ namespace
   {
     const std::set<IDstate> &finals = conversion.dfa.get_final_states();
     std::string result = "(\n";
-    for (size_t i = 0; i < conversion.subsets.size(); ++i)
+    for (std::size_t i = 0; i < conversion.subsets.size(); ++i)
     {
       const IDstate id = static_cast<IDstate>(i);
       result += "    (\"" + state_name(DFA_PREFIX, id) + "\", (";
@@ -276,38 +270,9 @@ bool write_document(const std::string &path, const std::string &document)
   return out.good();
 }
 
-std::string typst_command()
-{
-  // Permite forzar una orden concreta, por ejemplo TYPST_CMD=/opt/typst/typst.
-  const char *from_env = std::getenv("TYPST_CMD");
-  if (from_env != nullptr && from_env[0] != '\0')
-  {
-    return from_env;
-  }
-
-  if (command_exists("typst"))
-  {
-    return "typst";
-  }
-
-  // Sin typst instalado se recurre al contenedor, si esta el envoltorio a mano.
-  std::error_code error;
-  if (std::filesystem::exists(DOCKER_WRAPPER, error) && command_exists("docker"))
-  {
-    return DOCKER_WRAPPER;
-  }
-
-  return "";
-}
-
-bool typst_available()
-{
-  return !typst_command().empty();
-}
-
 int compile_document(const std::string &typ_path, const std::string &out_path)
 {
   const std::string command =
-      typst_command() + " compile \"" + typ_path + "\" \"" + out_path + "\"";
+      "typst compile \"" + typ_path + "\" \"" + out_path + "\"";
   return std::system(command.c_str());
 }

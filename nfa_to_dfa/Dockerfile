@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get purge -y curl xz-utils && rm -rf /var/lib/apt/lists/*
 
 # Pre-descargar finite y sus dependencias (cetz, t4t, oxifmt, diagraph-layout),
-# que son los paquetes con los que se dibujan los automatas. 
+# que son los paquetes con los que se dibujan los automatas.
 ENV XDG_CACHE_HOME=/opt/cache
 RUN mkdir -p /tmp/warmup && cd /tmp/warmup \
     && printf '%s\n' \
@@ -31,7 +31,6 @@ COPY . .
 RUN cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_TESTING=ON \
-    -DNFA_DFA_ENABLE_SANITIZERS=OFF \
     && cmake --build build --parallel
 
 # `make test` usa esta orden; `make run` la sustituye por el programa.

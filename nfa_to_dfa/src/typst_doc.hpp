@@ -53,23 +53,9 @@ std::string build_typst_document(const std::vector<Conversion> &cases);
 bool write_document(const std::string &path, const std::string &document);
 
 /**
- * @brief Determina con que orden se invocara a Typst.
- *
- * Se prueba, en orden: la variable de entorno `TYPST_CMD`, el ejecutable
- * `typst` del PATH y, por ultimo, el envoltorio `./typst-docker.sh`, que corre
- * typst dentro de un contenedor para no tener que instalarlo en el equipo.
- *
- * @return La orden que debe usarse, o una cadena vacia si no hay ninguna.
- */
-std::string typst_command();
-
-/** @return true si hay alguna forma disponible de invocar a Typst. */
-bool typst_available();
-
-/**
  * @brief Invoca `typst compile` sobre un archivo ya escrito.
  * @param typ_path Ruta del archivo `.typ` de entrada.
  * @param out_path Ruta de salida; su extension determina el formato.
- * @return Codigo de salida del proceso `typst` (0 indica exito).
+ * @return Resultado de std::system (0 indica exito).
  */
 int compile_document(const std::string &typ_path, const std::string &out_path);

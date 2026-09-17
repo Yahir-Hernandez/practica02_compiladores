@@ -19,9 +19,9 @@
  * @endcode
  */
 #pragma once
+#include <set>
 #include <string>
 #include "automatas.hpp"
-#include "convert.hpp"
 
 /** Prefijo de los nombres de estado del NFA (q0, q1, ...). */
 inline constexpr const char *NFA_PREFIX = "q";
@@ -41,13 +41,6 @@ inline constexpr const char *EPSILON = "ε";
 std::string state_name(const std::string &prefix, IDstate state);
 
 /**
- * @brief Serializa un conjunto de simbolos como arreglo de Typst.
- * @param alphabet Alfabeto que se serializara.
- * @return Texto de la forma `("a", "b")`.
- */
-std::string alphabet_to_string(const std::set<char> &alphabet);
-
-/**
  * @brief Serializa los estados finales como arreglo de Typst.
  * @param f_states Estados finales que se serializaran.
  * @param prefix Prefijo con el que se nombran los estados.
@@ -55,15 +48,6 @@ std::string alphabet_to_string(const std::set<char> &alphabet);
  */
 std::string final_states_to_string(const std::set<IDstate> &f_states,
                                    const std::string &prefix);
-
-/**
- * @brief Serializa un conjunto de estados como texto legible.
- * @param st Conjunto que se serializara.
- * @param prefix Prefijo con el que se nombran los estados.
- * @return Texto de la forma `{q0, q1}`, o `{}` si el conjunto es vacio.
- */
-std::string state_set_to_string(const std::set<IDstate> &st,
-                                const std::string &prefix);
 
 /**
  * @brief Serializa un NFA, incluyendo transiciones epsilon.

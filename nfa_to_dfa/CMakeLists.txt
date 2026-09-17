@@ -6,21 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(
-    NFA_DFA_ENABLE_SANITIZERS
-    "Compila los ejecutables con AddressSanitizer y UndefinedBehaviorSanitizer"
-    OFF
-)
-
-if(NFA_DFA_ENABLE_SANITIZERS)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
-        add_link_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
-    else()
-        message(WARNING "Los sanitizadores solo estan configurados para GCC y Clang")
-    endif()
-endif()
-
 # Biblioteca reutilizable con los algoritmos de conversion.
 add_library(nfa_to_dfa_core STATIC
     src/convert.cpp
@@ -28,7 +13,7 @@ add_library(nfa_to_dfa_core STATIC
 target_include_directories(nfa_to_dfa_core PUBLIC src)
 target_compile_options(nfa_to_dfa_core PRIVATE -Wall -Wextra -Wpedantic)
 
-# Genera el ejecutable que imprime los NFA y DFA en formato Typst.
+# Genera el ejecutable que escribe el documento Typst y su PDF.
 add_executable(nfa_to_dfa_exec
     src/main.cpp
     src/to_string.cpp

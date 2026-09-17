@@ -4,6 +4,8 @@
  */
 #include "to_string.hpp"
 
+#include <cstddef>
+#include <iterator>
 #include <map>
 #include <vector>
 
@@ -46,10 +48,10 @@ namespace
   }
 
   /** Serializa la lista de nombres de estado `("q0", "q1", ...)`. */
-  std::string states_to_string(size_t num_states, const std::string &prefix)
+  std::string states_to_string(std::size_t num_states, const std::string &prefix)
   {
     std::vector<std::string> names;
-    for (size_t i = 0; i < num_states; ++i)
+    for (std::size_t i = 0; i < num_states; ++i)
     {
       names.push_back(state_name(prefix, static_cast<IDstate>(i)));
     }
@@ -93,17 +95,6 @@ std::string state_name(const std::string &prefix, IDstate state)
   return prefix + std::to_string(state);
 }
 
-// Serializa el alfabeto conservando el orden definido por std::set.
-std::string alphabet_to_string(const std::set<char> &alphabet)
-{
-  std::vector<std::string> symbols;
-  for (char symbol : alphabet)
-  {
-    symbols.push_back(std::string(1, symbol));
-  }
-  return to_array(symbols);
-}
-
 // Serializa la lista de estados finales.
 std::string final_states_to_string(const std::set<IDstate> &f_states,
                                    const std::string &prefix)
@@ -116,22 +107,6 @@ std::string final_states_to_string(const std::set<IDstate> &f_states,
   return to_array(names);
 }
 
-// Serializa un conjunto de estados en notacion matematica.
-std::string state_set_to_string(const std::set<IDstate> &st, const std::string &prefix)
-{
-  std::string result = "{";
-  for (auto it = st.begin(); it != st.end(); ++it)
-  {
-    result += state_name(prefix, *it);
-    if (std::next(it) != st.end())
-    {
-      result += ", ";
-    }
-  }
-  result += "}";
-  return result;
-}
-
 // Serializa todos los componentes observables de un NFA.
 std::string nfa_to_string(const NFA &nfa, const std::string &indent)
 {
@@ -141,7 +116,7 @@ std::string nfa_to_string(const NFA &nfa, const std::string &indent)
   std::string result = "(\n";
   result += in1 + "states: " + states_to_string(nfa.get_num_states(), NFA_PREFIX) + ",\n";
   result += in1 + "transitions: (\n";
-  for (size_t i = 0; i < nfa.get_num_states(); ++i)
+  for (std::size_t i = 0; i < nfa.get_num_states(); ++i)
   {
     const stateNFA &state = nfa.get_state(static_cast<IDstate>(i));
     // Invierte "simbolo -> destinos" a "destino -> simbolos".
@@ -176,7 +151,7 @@ std::string dfa_to_string(const DFA &dfa, const std::string &indent)
   std::string result = "(\n";
   result += in1 + "states: " + states_to_string(dfa.get_num_states(), DFA_PREFIX) + ",\n";
   result += in1 + "transitions: (\n";
-  for (size_t i = 0; i < dfa.get_num_states(); ++i)
+  for (std::size_t i = 0; i < dfa.get_num_states(); ++i)
   {
     std::map<IDstate, std::vector<std::string>> targets;
     for (const auto &transition : dfa.get_transition(static_cast<IDstate>(i)))
