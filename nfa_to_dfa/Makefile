@@ -1,27 +1,24 @@
-# Alternativa a CMake para compilar el proyecto con un solo comando.
-CXX      ?= g++
-CXXFLAGS ?= -std=c++17 -Wall -Wextra -Isrc
+# CMake compila dentro de Docker; Make coordina la ejecucion y la limpieza.
+IMAGE := nfa-to-dfa
 
-SOURCES := src/main.cpp src/to_string.cpp src/convert.cpp src/typst_doc.cpp
-HEADERS := $(wildcard src/*.hpp)
-BIN     := build/nfa_to_dfa_exec
+.PHONY: run test clean image
 
-.PHONY: all run test clean
+# Genera el documento Typst y el PDF con el propietario del usuario local.
+run: image
+	mkdir -p salida
+	docker run --rm --network none \
+		--user "$$(id -u):$$(id -g)" \
+		--volume "$$(pwd)/salida:/app/salida" \
+		$(IMAGE) ./build/nfa_to_dfa_exec
 
-all: $(BIN)
+# Ejecuta CTest; Docker y Make propagan cualquier error de las pruebas.
+test: image
+	docker run --rm --network none $(IMAGE)
 
-$(BIN): $(SOURCES) $(HEADERS)
-	@mkdir -p build
-	$(CXX) $(CXXFLAGS) $(SOURCES) -o $@
-
-## Genera el documento y lo compila con typst (requiere typst en el PATH).
-run: $(BIN)
-	./$(BIN)
-
-## Corre la suite de pruebas (CTest con sanitizadores) dentro del contenedor.
-test:
-	docker build -t nfa-to-dfa .
-	docker run --rm nfa-to-dfa
-
+# Elimina los documentos generados, sin depender de Docker.
 clean:
-	rm -rf build salida
+	rm -rf salida
+
+# Docker reutiliza las capas sin cambios y recompila cuando cambia el codigo.
+image:
+	docker build -t $(IMAGE) .

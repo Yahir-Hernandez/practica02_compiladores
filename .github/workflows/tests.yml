@@ -1,0 +1,19 @@
+name: Tests
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v6
+
+      - name: Ejecutar las pruebas
+        working-directory: nfa_to_dfa
+        run: make test

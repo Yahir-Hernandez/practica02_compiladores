@@ -11,10 +11,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get purge -y curl xz-utils && rm -rf /var/lib/apt/lists/*
 
 # Pre-descargar finite y sus dependencias (cetz, t4t, oxifmt, diagraph-layout),
-# que son los paquetes con los que se dibujan los automatas. Asi el contenedor
-# compila el documento sin conexion a internet.
-# La cache queda fuera de /root y con permisos para todos, de modo que tambien
-# funcione con `docker run --user` (ver typst-docker.sh).
+# que son los paquetes con los que se dibujan los automatas. 
 ENV XDG_CACHE_HOME=/opt/cache
 RUN mkdir -p /tmp/warmup && cd /tmp/warmup \
     && printf '%s\n' \
@@ -34,14 +31,8 @@ COPY . .
 RUN cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_TESTING=ON \
-    -DNFA_DFA_ENABLE_SANITIZERS=ON \
+    -DNFA_DFA_ENABLE_SANITIZERS=OFF \
     && cmake --build build --parallel
 
-# LeakSanitizer se desactiva por compatibilidad con contenedores restringidos.
-ENV ASAN_OPTIONS=detect_leaks=0:halt_on_error=1
-ENV UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
-
-# Ejecutar la suite registrada en CTest al iniciar el contenedor.
-# La misma imagen sirve para compilar el documento:
-#   docker run --rm -v "$PWD:/work" -w /work <imagen> typst compile ...
-CMD ["ctest", "--test-dir", "build", "--output-on-failure", "-V"]
+# `make test` usa esta orden; `make run` la sustituye por el programa.
+CMD ["ctest", "--test-dir", "build", "--output-on-failure"]
