@@ -12,6 +12,15 @@
 #include "automatas.hpp"
 
 /**
+ * @brief Trazabilidad de la construccion de subconjuntos.
+ *
+ * El elemento i contiene el subconjunto de estados del NFA que dio origen al
+ * estado i del DFA. Es la informacion que permite explicar el "antes y despues"
+ * de la conversion.
+ */
+using SubsetTable = std::vector<std::set<IDstate>>;
+
+/**
  * @brief Calcula la operacion move del algoritmo de subconjuntos.
  * @param st Conjunto de estados origen.
  * @param symbol Simbolo que se consume.
@@ -31,6 +40,7 @@ std::set<IDstate> eClosure(std::set<IDstate> st, const NFA &nfa);
 /**
  * @brief Convierte un NFA en un DFA equivalente.
  * @param nfa Automata no determinista de entrada.
+ * @param subsets Salida opcional con el subconjunto asociado a cada estado del DFA.
  * @return DFA construido mediante la construccion de subconjuntos.
  */
-DFA nfa_to_dfa(const NFA &nfa);
+DFA nfa_to_dfa(const NFA &nfa, SubsetTable *subsets = nullptr);

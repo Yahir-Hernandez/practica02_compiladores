@@ -41,7 +41,7 @@ std::set<IDstate> eClosure(std::set<IDstate> st, const NFA &nfa)
   return result;
 }
 
-DFA nfa_to_dfa(const NFA &nfa) {
+DFA nfa_to_dfa(const NFA &nfa, SubsetTable *subsets) {
   DFA dfa;
   std::queue<std::set<IDstate>> qe;
   std::set<IDstate> init_state = eClosure({nfa.get_initial_state()}, nfa);
@@ -76,6 +76,14 @@ DFA nfa_to_dfa(const NFA &nfa) {
         dfa.add_final_state(state_map[state_set]);
         break;
       }
+    }
+  }
+
+  // Publica la correspondencia estado del DFA -> subconjunto del NFA.
+  if (subsets != nullptr) {
+    subsets->assign(dfa.get_num_states(), {});
+    for (const auto &entry : state_map) {
+      (*subsets)[entry.second] = entry.first;
     }
   }
 

@@ -32,6 +32,7 @@ target_compile_options(nfa_to_dfa_core PRIVATE -Wall -Wextra -Wpedantic)
 add_executable(nfa_to_dfa_exec
     src/main.cpp
     src/to_string.cpp
+    src/typst_doc.cpp
 )
 target_link_libraries(nfa_to_dfa_exec PRIVATE nfa_to_dfa_core)
 target_compile_options(nfa_to_dfa_exec PRIVATE -Wall -Wextra -Wpedantic)

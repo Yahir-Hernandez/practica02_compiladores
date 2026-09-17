@@ -123,10 +123,9 @@ public:
   }
 
   /** Calcula y devuelve el conjunto de estados finales del NFA. */
-  const std::set<IDstate> &get_final_states() const
+  std::set<IDstate> get_final_states() const
   {
-    static std::set<IDstate> final_states;
-    final_states.clear();
+    std::set<IDstate> final_states;
     for (size_t i = 0; i < states.size(); ++i)
     {
       if (states[i].is_final)

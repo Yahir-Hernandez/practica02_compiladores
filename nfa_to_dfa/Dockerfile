@@ -10,13 +10,20 @@ RUN apt-get update && apt-get install -y \
     && rm -rf typst.tar.xz typst-x86_64-unknown-linux-musl \
     && apt-get purge -y curl xz-utils && rm -rf /var/lib/apt/lists/*
 
-# Pre-descargar el paquete fletcher (librería de Typst)
-ENV XDG_CACHE_HOME=/root/.cache
-RUN mkdir -p /tmp/warmup && cd /tmp/warmup && \
-    echo '#import "@preview/fletcher:0.5.7" as fletcher' > warmup.typ && \
-    echo '#fletcher.diagram()' >> warmup.typ && \
-    typst compile warmup.typ warmup.svg --format svg || true && \
-    rm -rf /tmp/warmup
+# Pre-descargar finite y sus dependencias (cetz, t4t, oxifmt, diagraph-layout),
+# que son los paquetes con los que se dibujan los automatas. Asi el contenedor
+# compila el documento sin conexion a internet.
+# La cache queda fuera de /root y con permisos para todos, de modo que tambien
+# funcione con `docker run --user` (ver typst-docker.sh).
+ENV XDG_CACHE_HOME=/opt/cache
+RUN mkdir -p /tmp/warmup && cd /tmp/warmup \
+    && printf '%s\n' \
+        '#import "@preview/finite:0.5.1": automaton, layout' \
+        '#automaton((q0: (q1: "a"), q1: (:)), layout: layout.diagraph)' \
+        > warmup.typ \
+    && typst compile warmup.typ warmup.svg --format svg \
+    && rm -rf /tmp/warmup \
+    && chmod -R a+rwX /opt/cache
 
 WORKDIR /app
 
@@ -35,4 +42,6 @@ ENV ASAN_OPTIONS=detect_leaks=0:halt_on_error=1
 ENV UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
 
 # Ejecutar la suite registrada en CTest al iniciar el contenedor.
+# La misma imagen sirve para compilar el documento:
+#   docker run --rm -v "$PWD:/work" -w /work <imagen> typst compile ...
 CMD ["ctest", "--test-dir", "build", "--output-on-failure", "-V"]
